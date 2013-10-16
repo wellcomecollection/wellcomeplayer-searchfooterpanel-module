@@ -197,9 +197,9 @@ export class FooterPanel extends baseFooter.ExtendedFooterPanel {
             this.search(terms);
         });
 
-        // hide embed button if some assets require authentication.
+        // show embed button if no assets require authentication.
         if (this.provider.pkg.extensions && this.provider.pkg.extensions.isAllOpen) {
-            this.$embedBtn.show();
+            this.$embedButton.show();
         }
 
         if ((<app.App>this.app).isSaveToLightboxEnabled()) {
