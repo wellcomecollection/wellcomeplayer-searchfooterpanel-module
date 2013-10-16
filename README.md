@@ -1,0 +1,2 @@
+wellcomeplayer-searchfooterpanel-module
+=======================================
