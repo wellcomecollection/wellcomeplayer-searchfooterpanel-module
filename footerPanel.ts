@@ -4,12 +4,12 @@
 import coreApp = require("../../extensions/coreplayer-seadragon-extension/app");
 import app = require("../../extensions/wellcomeplayer-seadragon-extension/app");
 import baseApp = require("../coreplayer-shared-module/baseApp");
-import baseFooter = require("../coreplayer-extendedfooterpanel-module/extendedFooterPanel");
+import footer = require("../wellcomeplayer-extendedfooterpanel-module/footerPanel");
 import utils = require("../../utils");
 import download = require("../wellcomeplayer-dialogues-module/downloadDialogue");
 import AutoComplete = require("./autocomplete");
 
-export class FooterPanel extends baseFooter.ExtendedFooterPanel {
+export class FooterPanel extends footer.FooterPanel {
 
     $searchContainer: JQuery;
     $searchOptions: JQuery;
@@ -196,15 +196,6 @@ export class FooterPanel extends baseFooter.ExtendedFooterPanel {
         new AutoComplete(this.$searchText, this.provider.getAutoCompleteUri(), (terms) => {
             this.search(terms);
         });
-
-        // show embed button if no assets require authentication.
-        if (this.provider.pkg.extensions && this.provider.pkg.extensions.isAllOpen) {
-            this.$embedButton.show();
-        }
-
-        if ((<app.App>this.app).isSaveToLightboxEnabled()) {
-            this.$saveButton.show();
-        }  
     }
 
     checkForSearchParams(): void{
