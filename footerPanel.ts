@@ -1,13 +1,14 @@
 /// <reference path="../../js/jquery.d.ts" />
 /// <reference path="../../js/extensions.d.ts" />
 
-import coreApp = require("../../extensions/coreplayer-seadragon-extension/app");
-import app = require("../../extensions/wellcomeplayer-seadragon-extension/app");
-import baseApp = require("../coreplayer-shared-module/baseApp");
+import coreExtension = require("../../extensions/coreplayer-seadragon-extension/extension");
+import extension = require("../../extensions/wellcomeplayer-seadragon-extension/extension");
+import baseExtension = require("../coreplayer-shared-module/baseExtension");
 import footer = require("../wellcomeplayer-extendedfooterpanel-module/footerPanel");
 import utils = require("../../utils");
 import download = require("../wellcomeplayer-dialogues-module/downloadDialogue");
 import AutoComplete = require("./autocomplete");
+import IWellcomeSeadragonProvider = require("../../extensions/wellcomeplayer-seadragon-extension/iWellcomeSeadragonProvider");
 
 export class FooterPanel extends footer.FooterPanel {
 
@@ -51,19 +52,19 @@ export class FooterPanel extends footer.FooterPanel {
         
         super.create();
 
-        $.subscribe(baseApp.BaseApp.ASSET_INDEX_CHANGED, (e, assetIndex) => {
+        $.subscribe(baseExtension.BaseExtension.ASSET_INDEX_CHANGED, (e, assetIndex) => {
             this.assetIndexChanged();
         });
 
-        $.subscribe(coreApp.App.MODE_CHANGED, (e, mode) => {
+        $.subscribe(coreExtension.Extension.MODE_CHANGED, (e, mode) => {
             this.modeChanged();
         });
 
-        $.subscribe(app.App.SEARCH_RESULTS, (e, terms, results) => {
+        $.subscribe(extension.Extension.SEARCH_RESULTS, (e, terms, results) => {
             this.displaySearchResults(terms, results);
         });
 
-        $.subscribe(app.App.CREATED, (e) => {
+        $.subscribe(extension.Extension.CREATED, (e) => {
             this.checkForSearchParams();
         });
 
@@ -193,14 +194,14 @@ export class FooterPanel extends footer.FooterPanel {
             this.$element.addClass('min');
         }
 
-        new AutoComplete(this.$searchText, this.provider.getAutoCompleteUri(), (terms) => {
+        new AutoComplete(this.$searchText, (<IWellcomeSeadragonProvider>this.provider).getAutoCompleteUri(), (terms) => {
             this.search(terms);
         });
     }
 
     checkForSearchParams(): void{
         // if a h or q value is in the hash params, do a search.
-        if (this.app.isDeepLinkingEnabled()){
+        if (this.extension.isDeepLinkingEnabled()){
             
             var terms = utils.Utils.getHashParameter('h', parent.document)
                     || utils.Utils.getHashParameter('q', parent.document);
@@ -219,7 +220,7 @@ export class FooterPanel extends footer.FooterPanel {
         this.terms = terms;
 
         if (this.terms == '' || this.terms == this.content.enterKeyword) {
-            this.app.showDialogue(this.config.modules.genericDialogue.content.emptyValue, function(){
+            this.extension.showDialogue(this.config.modules.genericDialogue.content.emptyValue, function(){
                     this.$searchText.focus();
                 });
 
@@ -245,7 +246,7 @@ export class FooterPanel extends footer.FooterPanel {
         var lineTop = this.$line.position().top;
         var lineLeft = this.$line.position().left;
 
-        var results = (<app.App>this.app).searchResults;
+        var results = (<extension.Extension>this.extension).searchResults;
 
         var that = this;
 
@@ -313,9 +314,9 @@ export class FooterPanel extends footer.FooterPanel {
 
         var title = "{0} {1}";
 
-        var mode = (<coreApp.App>that.app).getMode();
+        var mode = (<coreExtension.Extension>that.extension).getMode();
 
-        if (mode == coreApp.App.PAGE_MODE) {
+        if (mode == coreExtension.Extension.PAGE_MODE) {
             var asset = that.app.getAssetByIndex(assetIndex);
 
             var orderLabel = asset.orderLabel;
@@ -331,7 +332,7 @@ export class FooterPanel extends footer.FooterPanel {
 
         that.$placemarkerDetailsTop.html(title);
 
-        var result = (<app.App>that.app).searchResults[elemIndex];
+        var result = (<extension.Extension>that.extension).searchResults[elemIndex];
 
         var terms = utils.Utils.ellipsis(that.terms, 20);
 
@@ -381,14 +382,14 @@ export class FooterPanel extends footer.FooterPanel {
 
     setPageMarkerPosition(): void {
 
-        if (this.app.currentAssetIndex == null) return;
+        if (this.extension.currentAssetIndex == null) return;
 
         // position placemarker showing current page.
         var pageLineRatio = this.getPageLineRatio();
         var lineTop = this.$line.position().top;
         var lineLeft = this.$line.position().left;
 
-        var position = this.app.currentAssetIndex * pageLineRatio;
+        var position = this.extension.currentAssetIndex * pageLineRatio;
         var top = lineTop;
         var left = lineLeft + position;
 
@@ -449,7 +450,7 @@ export class FooterPanel extends footer.FooterPanel {
         this.setPlacemarkerLabel();
 
         // show/hide download button.
-        if ((<app.App>this.app).hasPermissionToViewCurrentItem()) {
+        if ((<extension.Extension>this.extension).hasPermissionToViewCurrentItem()) {
             this.$downloadButton.show();
         } else {
             this.$downloadButton.hide();
@@ -462,13 +463,13 @@ export class FooterPanel extends footer.FooterPanel {
 
     setPlacemarkerLabel(): void {
 
-        var mode = (<coreApp.App>this.app).getMode();
+        var mode = (<coreExtension.Extension>this.extension).getMode();
 
         var label = this.content.displaying;
-        var index = this.app.currentAssetIndex;
+        var index = this.extension.currentAssetIndex;
 
-        if (mode == coreApp.App.PAGE_MODE) {
-            var asset = this.app.getAssetByIndex(index);
+        if (mode == coreExtension.Extension.PAGE_MODE) {
+            var asset = this.extension.getAssetByIndex(index);
 
             var orderLabel = asset.orderLabel;
 
@@ -476,7 +477,7 @@ export class FooterPanel extends footer.FooterPanel {
                 orderLabel = "-";
             }
 
-            var lastAssetOrderLabel = this.app.getLastAssetOrderLabel();
+            var lastAssetOrderLabel = this.extension.getLastAssetOrderLabel();
             this.$pagePositionLabel.html(String.prototype.format(label, this.content.page, orderLabel, lastAssetOrderLabel));
         } else {
             this.$pagePositionLabel.html(String.prototype.format(label, this.content.image, index + 1, this.provider.assetSequence.assets.length));
@@ -519,7 +520,7 @@ export class FooterPanel extends footer.FooterPanel {
     resize(): void {
         super.resize();
 
-        if ((<app.App>this.app).searchResults) {
+        if ((<extension.Extension>this.extension).searchResults) {
             this.positionSearchResultPlacemarkers();
         }
 
