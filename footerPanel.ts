@@ -9,6 +9,7 @@ import utils = require("../../utils");
 import download = require("../wellcomeplayer-dialogues-module/downloadDialogue");
 import AutoComplete = require("./autocomplete");
 import IWellcomeSeadragonProvider = require("../../extensions/wellcomeplayer-seadragon-extension/iWellcomeSeadragonProvider");
+import ISeadragonExtension = require("../../extensions/coreplayer-seadragon-extension/iSeadragonExtension");
 
 export class FooterPanel extends footer.FooterPanel {
 
@@ -314,10 +315,10 @@ export class FooterPanel extends footer.FooterPanel {
 
         var title = "{0} {1}";
 
-        var mode = (<coreExtension.Extension>that.extension).getMode();
+        var mode = that.extension.getMode();
 
         if (mode == coreExtension.Extension.PAGE_MODE) {
-            var asset = that.app.getAssetByIndex(assetIndex);
+            var asset = that.extension.getAssetByIndex(assetIndex);
 
             var orderLabel = asset.orderLabel;
 
@@ -463,7 +464,7 @@ export class FooterPanel extends footer.FooterPanel {
 
     setPlacemarkerLabel(): void {
 
-        var mode = (<coreExtension.Extension>this.extension).getMode();
+        var mode = (<ISeadragonExtension>this.extension).getMode();
 
         var label = this.content.displaying;
         var index = this.extension.currentAssetIndex;
