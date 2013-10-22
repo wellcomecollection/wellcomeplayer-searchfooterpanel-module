@@ -49,7 +49,7 @@ export class FooterPanel extends footer.FooterPanel {
 
     create(): void {
         
-        this.setConfig('footerPanel');
+        this.setConfig('searchFooterPanel');
         
         super.create();
 
