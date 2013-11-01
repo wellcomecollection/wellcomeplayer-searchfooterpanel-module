@@ -186,7 +186,7 @@ export class FooterPanel extends footer.FooterPanel {
         });
 
         // hide search options if not enabled/supported.
-        if (!this.provider.config.options.searchWithinEnabled ||
+        if (this.provider.config.options.searchWithinEnabled === false ||
             !this.provider.assetSequence.supportsSearch) {
             this.$searchContainer.hide();
             this.$searchPagerContainer.hide();
@@ -531,14 +531,14 @@ export class FooterPanel extends footer.FooterPanel {
 
         var center = this.$element.width() / 2;
  
-        // position search input.
-        this.$searchOptions.css({
-            'left': center - (this.$searchOptions.outerWidth() / 2)
-        });
-
         // position search pager controls.
         this.$searchPagerControls.css({
             'left': center - (this.$searchPagerControls.width() / 2)
+        });
+
+        // position search input.
+        this.$searchOptions.css({
+            'left': center - (this.$searchOptions.outerWidth() / 2)
         });
     }
 }
