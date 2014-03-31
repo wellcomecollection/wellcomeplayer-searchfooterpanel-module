@@ -48,9 +48,9 @@ export class FooterPanel extends footer.FooterPanel {
     }
 
     create(): void {
-        
+
         this.setConfig('searchFooterPanel');
-        
+
         super.create();
 
         $.subscribe(baseExtension.BaseExtension.ASSET_INDEX_CHANGED, (e, assetIndex) => {
@@ -203,7 +203,7 @@ export class FooterPanel extends footer.FooterPanel {
     checkForSearchParams(): void{
         // if a h or q value is in the hash params, do a search.
         if (this.extension.isDeepLinkingEnabled()){
-            
+
             var terms = utils.Utils.getHashParameter('h', parent.document)
                     || utils.Utils.getHashParameter('q', parent.document);
 
@@ -239,6 +239,11 @@ export class FooterPanel extends footer.FooterPanel {
     }
 
     positionSearchResultPlacemarkers(): void {
+
+        var results = (<extension.Extension>this.extension).searchResults;
+
+        if (!results) return;
+
         // clear all existing placemarkers
         var placemarkers = this.getSearchResultPlacemarkers();
         placemarkers.remove();
@@ -246,8 +251,6 @@ export class FooterPanel extends footer.FooterPanel {
         var pageWidth = this.getPageLineRatio();
         var lineTop = this.$line.position().top;
         var lineLeft = this.$line.position().left;
-
-        var results = (<extension.Extension>this.extension).searchResults;
 
         var that = this;
 
@@ -420,6 +423,8 @@ export class FooterPanel extends footer.FooterPanel {
 
     clearSearchResults(): void {
 
+        (<extension.Extension>this.extension).searchResults = null;
+
         // clear all existing placemarkers
         var placemarkers = this.getSearchResultPlacemarkers();
         placemarkers.remove();
@@ -530,7 +535,7 @@ export class FooterPanel extends footer.FooterPanel {
         this.$searchPagerContainer.width(this.$element.width());
 
         var center = this.$element.width() / 2;
- 
+
         // position search pager controls.
         this.$searchPagerControls.css({
             'left': center - (this.$searchPagerControls.width() / 2)
