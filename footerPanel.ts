@@ -53,8 +53,8 @@ export class FooterPanel extends footer.FooterPanel {
 
         super.create();
 
-        $.subscribe(baseExtension.BaseExtension.ASSET_INDEX_CHANGED, (e, assetIndex) => {
-            this.assetIndexChanged();
+        $.subscribe(baseExtension.BaseExtension.CANVAS_INDEX_CHANGED, (e, canvasIndex) => {
+            this.canvasIndexChanged();
         });
 
         $.subscribe(coreExtension.Extension.MODE_CHANGED, (e, mode) => {
@@ -187,7 +187,7 @@ export class FooterPanel extends footer.FooterPanel {
 
         // hide search options if not enabled/supported.
         if (this.provider.config.options.searchWithinEnabled === false ||
-            !this.provider.assetSequence.supportsSearch) {
+            !this.provider.sequence.supportsSearch) {
             this.$searchContainer.hide();
             this.$searchPagerContainer.hide();
             this.$searchResultsContainer.hide();
@@ -202,7 +202,7 @@ export class FooterPanel extends footer.FooterPanel {
 
     checkForSearchParams(): void{
         // if a h or q value is in the hash params, do a search.
-        if (this.extension.isDeepLinkingEnabled()){
+        if (this.provider.isDeepLinkingEnabled()){
 
             var terms = utils.Utils.getHashParameter('h', parent.document)
                     || utils.Utils.getHashParameter('q', parent.document);
@@ -307,12 +307,12 @@ export class FooterPanel extends footer.FooterPanel {
 
         $placemarker.addClass('hover');
 
-        var assetIndex = parseInt($placemarker.attr('data-index'));
+        var canvasIndex = parseInt($placemarker.attr('data-index'));
 
         var placemarkers = that.getSearchResultPlacemarkers();
         var elemIndex = placemarkers.index($placemarker[0]);
 
-        that.currentPlacemarkerIndex = assetIndex;
+        that.currentPlacemarkerIndex = canvasIndex;
 
         that.$placemarkerDetails.show();
 
@@ -321,7 +321,7 @@ export class FooterPanel extends footer.FooterPanel {
         var mode = that.extension.getMode();
 
         if (mode == coreExtension.Extension.PAGE_MODE) {
-            var asset = that.extension.getAssetByIndex(assetIndex);
+            var asset = that.provider.getCanvasByIndex(canvasIndex);
 
             var orderLabel = asset.orderLabel;
 
@@ -331,7 +331,7 @@ export class FooterPanel extends footer.FooterPanel {
 
             title = String.prototype.format(title, that.content.pageCaps, orderLabel);
         } else {
-            title = String.prototype.format(title, that.content.imageCaps, assetIndex + 1);
+            title = String.prototype.format(title, that.content.imageCaps, canvasIndex + 1);
         }
 
         that.$placemarkerDetailsTop.html(title);
@@ -386,14 +386,14 @@ export class FooterPanel extends footer.FooterPanel {
 
     setPageMarkerPosition(): void {
 
-        if (this.extension.currentAssetIndex == null) return;
+        if (this.provider.canvasIndex == null) return;
 
         // position placemarker showing current page.
         var pageLineRatio = this.getPageLineRatio();
         var lineTop = this.$line.position().top;
         var lineLeft = this.$line.position().left;
 
-        var position = this.extension.currentAssetIndex * pageLineRatio;
+        var position = this.provider.canvasIndex * pageLineRatio;
         var top = lineTop;
         var left = lineLeft + position;
 
@@ -445,12 +445,12 @@ export class FooterPanel extends footer.FooterPanel {
         var lineWidth = this.$line.width();
 
         // find page/width ratio by dividing the line width by the number of pages in the book.
-        if (this.provider.assetSequence.assets.length == 1) return 0;
+        if (this.provider.getTotalCanvases() == 1) return 0;
 
-        return lineWidth / (this.provider.assetSequence.assets.length - 1);
+        return lineWidth / (this.provider.getTotalCanvases() - 1);
     }
 
-    assetIndexChanged(): void {
+    canvasIndexChanged(): void {
 
         this.setPageMarkerPosition();
         this.setPlacemarkerLabel();
@@ -472,10 +472,10 @@ export class FooterPanel extends footer.FooterPanel {
         var mode = (<ISeadragonExtension>this.extension).getMode();
 
         var label = this.content.displaying;
-        var index = this.extension.currentAssetIndex;
+        var index = this.provider.canvasIndex;
 
         if (mode == coreExtension.Extension.PAGE_MODE) {
-            var asset = this.extension.getAssetByIndex(index);
+            var asset = this.provider.getCanvasByIndex(index);
 
             var orderLabel = asset.orderLabel;
 
@@ -483,10 +483,10 @@ export class FooterPanel extends footer.FooterPanel {
                 orderLabel = "-";
             }
 
-            var lastAssetOrderLabel = this.extension.getLastAssetOrderLabel();
-            this.$pagePositionLabel.html(String.prototype.format(label, this.content.page, orderLabel, lastAssetOrderLabel));
+            var lastCanvasOrderLabel = this.provider.getLastCanvasOrderLabel();
+            this.$pagePositionLabel.html(String.prototype.format(label, this.content.page, orderLabel, lastCanvasOrderLabel));
         } else {
-            this.$pagePositionLabel.html(String.prototype.format(label, this.content.image, index + 1, this.provider.assetSequence.assets.length));
+            this.$pagePositionLabel.html(String.prototype.format(label, this.content.image, index + 1, this.provider.getTotalCanvases()));
         }
     }
 
