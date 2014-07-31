@@ -98,7 +98,7 @@ class AutoComplete{
 
         // hide results if clicked outside.
         $(document).on('mouseup', (e) => {
-            if (this.$searchResultsList.parent().has(e.target).length === 0) {
+            if (this.$searchResultsList.parent().has($(e.target)[0]).length === 0) {
                 this.clearResults();
                 this.hideResults();
             }
