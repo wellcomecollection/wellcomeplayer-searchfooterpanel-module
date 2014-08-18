@@ -10,6 +10,7 @@ import download = require("../wellcomeplayer-dialogues-module/downloadDialogue")
 import AutoComplete = require("./autocomplete");
 import IWellcomeSeadragonProvider = require("../../extensions/wellcomeplayer-seadragon-extension/iWellcomeSeadragonProvider");
 import ISeadragonExtension = require("../../extensions/coreplayer-seadragon-extension/iSeadragonExtension");
+import IWellcomeExtension = require("../wellcomeplayer-shared-module/iWellcomeExtension");
 
 export class FooterPanel extends footer.FooterPanel {
 
@@ -456,10 +457,12 @@ export class FooterPanel extends footer.FooterPanel {
         this.setPlacemarkerLabel();
 
         // show/hide download button.
-        if ((<extension.Extension>this.extension).hasPermissionToViewCurrentItem()) {
-            this.$downloadButton.show();
-        } else {
-            this.$downloadButton.hide();
+        if ((<IWellcomeExtension>this.extension).isDownloadEnabled()){
+            if ((<extension.Extension>this.extension).hasPermissionToViewCurrentItem()) {
+                this.$downloadButton.show();
+            } else {
+                this.$downloadButton.hide();
+            }
         }
     }
 
